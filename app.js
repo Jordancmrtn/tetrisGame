@@ -67,6 +67,25 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
+  //Tetromino descend toute les secondes.
+  timerId = setInterval(moveDown, 1000)
+
+  function moveDown(){
+    undraw()
+    currentPosition += width
+    draw()
+    freeze()
+  }
+
+  function freeze(){
+    if(current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
+      current.forEach(index => squares[currentPosition + index].classList.add('taken'))
+      random = Math.floor(Math.random()*theTetrominoes.length)
+      current = theTetrominoes[random][currentRotation]
+      currentPosition = 4
+      draw()
+    }
+  }
 
 
 
