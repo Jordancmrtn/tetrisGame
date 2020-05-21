@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const scoreDisplay = document.querySelector('#score')
   const startButton = document.querySelector('#startButton')
   const width = 10
+  let nextRandom = 0
+  let timerId
 
   //Les tetrominos
   const lTetromino = [
@@ -93,10 +95,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function freeze(){
     if(current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
       current.forEach(index => squares[currentPosition + index].classList.add('taken'))
-      random = Math.floor(Math.random()*theTetrominoes.length)
+      random = nextRandom
+      nextRandom = Math.floor(Math.random()*theTetrominoes.length)
       current = theTetrominoes[random][currentRotation]
       currentPosition = 4
       draw()
+      displayShape()
     }
   }
 
@@ -138,9 +142,44 @@ document.addEventListener('DOMContentLoaded', () => {
     draw()
   }
 
+  //Voir le prochain Tetromino dans la miniGrid
+
+  const displaySquares = document.querySelectorAll('.miniGrid div')
+  const displayWidth = 4
+  let displayIndex = 0
 
 
+  const upNextTetromino = [
+    [1, displayWidth+1, displayWidth*2+1, 2],
+    [0, displayWidth, displayWidth+1, displayWidth*2+1],
+    [1, displayWidth, displayWidth+1, displayWidth+2],
+    [0, 1, displayWidth, displayWidth+1],
+    [1, displayWidth+1, displayWidth*2+1, displayWidth*3+1]
+  ]
 
+  //Montre le tetramino dans la miniGrid
+  function displayShape(){
+    displaySquares.forEach(square => {
+      square.classList.remove('tetromino')
+    })
+    upNextTetromino[nextRandom].forEach( index => {
+      displaySquares[displayIndex + index].classList.add('tetromino')
+    })
+  }
+
+
+  //ajouter la fonctionnalité au button
+  startButton.addEventListener('click', () => {
+    if (timerId){
+      clearInterval(timerId)
+      timerId = null
+    } else {
+      draw()
+      timerId = setInterval(moveDown, 1000)
+      nextRandom = Math.floor(Math.random()*theTetrominoes.length)
+      displayShape()
+    }
+  })
 
 
 
